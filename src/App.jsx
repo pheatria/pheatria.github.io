@@ -5,6 +5,7 @@ import Editor from "./components/Editor";
 import SnippetBar from "./components/SnippetBar";
 import FontSizeControl from "./components/FontSizeControl";
 import LinkSection from "./components/LinkSection";
+import DiceBar from "./components/DiceBar";
 
 const SNIPPETS = ["『", "』","\u3000"];
 const MIN_FONT = 4;
@@ -78,13 +79,19 @@ export default function App() {
   }
 
   async function handlePaste() {
-    // 문서가 포커스를 잃은 상태라면 포커스 부여 시도
-    window.focus();
-
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
-        insert(text);
+        // 전각 공백 15자 정의
+        const fullWidthSpaces = " ".repeat(15);
+
+        // 줄바꿈(\n) 기준으로 나눠 각 줄 끝에 전각 공백 15자를 붙이고 다시 합침
+        const modifiedText = text
+          .split("\n")
+          .map((line) => line + fullWidthSpaces)
+          .join("\n");
+
+        insert(modifiedText);
       } else {
         say("클립보드가 비어있습니다");
       }
@@ -101,6 +108,7 @@ export default function App() {
       <Editor ref={editorRef} text={draft} onChange={setDraft} fontSize={fontSize} />
 
       <SnippetBar snippets={SNIPPETS} onInsert={insert} />
+      <DiceBar onInsert={insert} />
       <FontSizeControl fontSize={fontSize} onChange={changeFont} />
 
       <div className="row">
