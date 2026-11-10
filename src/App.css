@@ -24,6 +24,11 @@
     --accent-fg: #101014;
   }
 }
+@media (min-width: 768px) {
+  .cursor-control {
+    display: none !important;
+  }
+}
 :root[data-theme="dark"] {
   --bg: #16161a;
   --fg: #ececf0;
