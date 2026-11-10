@@ -1,4 +1,5 @@
 import { useState } from "react";
+import VoiceInput from "./VoiceInput";
 
 const DICE_TEXT = 
 `1 펌블
@@ -40,6 +41,7 @@ export default function DiceBar({ onInsert }) {
         />
         <button onClick={handleDiceInsert}>주사위 추가</button>
       </div>
+      <VoiceInput onInsert={insert} say={say} />
     </div>
   );
 }
