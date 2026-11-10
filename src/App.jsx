@@ -38,7 +38,7 @@ export default function App() {
     const el = editorRef.current;
     const start = el.selectionStart;
     const end = el.selectionEnd;
-    setDraft(draft.slice(0, start) + s + draft.slice(end));
+    setDraft((prev) => prev.slice(0, start) + s + prev.slice(end));
     nextCursor.current = start + s.length;
     el.focus();
   }
@@ -103,18 +103,12 @@ export default function App() {
     }
   }
 
-  function handleLineDelete(newText, newCursorPos) {
-    setDraft(newText);
-    // 삭제 후 커서 위치 조정
-    nextCursor.current = newCursorPos;
-  }
-
   return (
     <main>
       <h1>AA 입력 도우미</h1>
 
       <Editor ref={editorRef} text={draft} onChange={setDraft} fontSize={fontSize} />
-      <CursorControl editorRef={editorRef} onLineDelete={handleLineDelete} />
+      <CursorControl editorRef={editorRef}/>
 
       <div className="row">
         <SnippetBar snippets={SNIPPETS} onInsert={insert} />

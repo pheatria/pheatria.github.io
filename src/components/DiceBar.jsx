@@ -1,5 +1,4 @@
 import { useState } from "react";
-import VoiceInput from "./VoiceInput";
 
 const DICE_TEXT = 
 `1 펌블

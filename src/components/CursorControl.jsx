@@ -1,4 +1,4 @@
-export default function CursorControl({ editorRef, onLineDelete }) {
+export default function CursorControl({ editorRef }) {
   // 커서 이동 제어 함수
   function moveCursor(direction) {
     const el = editorRef.current;

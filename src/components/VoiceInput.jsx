@@ -46,6 +46,7 @@ export default function VoiceInput({ onInsert, say }) {
   return (
     <button
       onClick={startSpeech}
+      disabled={isListening}
       style={{
         backgroundColor: isListening ? "#ff4d4f" : "",
         color: isListening ? "#fff" : "",

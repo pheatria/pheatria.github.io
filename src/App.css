@@ -28,6 +28,9 @@
   .cursor-control {
     display: none !important;
   }
+  .editor {
+    min-height: 600px;
+  }
 }
 :root[data-theme="dark"] {
   --bg: #16161a;
@@ -46,7 +49,7 @@ body {
   font-family: system-ui, -apple-system, "Noto Sans KR", sans-serif;
 }
 main {
-  height: 120dvh; 
+  height: 100dvh; 
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -62,6 +65,7 @@ h1 {
   flex: 1;
   width: 100%;
   box-sizing: border-box;
+  min-height: 60vh;
   height: auto;
   font-family: "Monapo", "MS PGothic", "MS P Gothic", "IPAMonaPGothic", sans-serif;
   font-size: 11px;
