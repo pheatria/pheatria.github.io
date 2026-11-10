@@ -6,5 +6,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // 또는 host: true
     port: 5173      // 기본 포트 번호
-  }
+  },
+  base: "./",
 });
