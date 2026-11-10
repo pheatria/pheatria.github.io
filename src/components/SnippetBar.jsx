@@ -15,7 +15,7 @@ function textOf(s) {
 
 export default function SnippetBar({ snippets, onInsert }) {
   return (
-    <div className="row">
+    <>
       {snippets.map((s, i) => (
         <button
           key={i}
@@ -26,6 +26,6 @@ export default function SnippetBar({ snippets, onInsert }) {
           {labelOf(s)}
         </button>
       ))}
-    </div>
+    </>
   );
 }

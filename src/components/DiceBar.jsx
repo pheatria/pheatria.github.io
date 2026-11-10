@@ -41,7 +41,6 @@ export default function DiceBar({ onInsert }) {
         />
         <button onClick={handleDiceInsert}>주사위 추가</button>
       </div>
-      <VoiceInput onInsert={insert} say={say} />
     </div>
   );
 }

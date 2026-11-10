@@ -7,6 +7,7 @@ import FontSizeControl from "./components/FontSizeControl";
 import LinkSection from "./components/LinkSection";
 import DiceBar from "./components/DiceBar";
 import CursorControl from "../../aa-helper/src/components/CursorControl";
+import VoiceInput from "./components/VoiceInput";
 
 const SNIPPETS = ["『", "』","\u3000"];
 const MIN_FONT = 4;
@@ -115,7 +116,10 @@ export default function App() {
       <Editor ref={editorRef} text={draft} onChange={setDraft} fontSize={fontSize} />
       <CursorControl editorRef={editorRef} onLineDelete={handleLineDelete} />
 
-      <SnippetBar snippets={SNIPPETS} onInsert={insert} />
+      <div className="row">
+        <SnippetBar snippets={SNIPPETS} onInsert={insert} />
+        <VoiceInput onInsert={insert} say={say} />
+      </div>
       <DiceBar onInsert={insert} />
       <FontSizeControl fontSize={fontSize} onChange={changeFont} />
 
