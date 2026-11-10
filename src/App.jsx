@@ -6,6 +6,7 @@ import SnippetBar from "./components/SnippetBar";
 import FontSizeControl from "./components/FontSizeControl";
 import LinkSection from "./components/LinkSection";
 import DiceBar from "./components/DiceBar";
+import CursorControl from "../../aa-helper/src/components/CursorControl";
 
 const SNIPPETS = ["『", "』","\u3000"];
 const MIN_FONT = 4;
@@ -101,11 +102,18 @@ export default function App() {
     }
   }
 
+  function handleLineDelete(newText, newCursorPos) {
+    setDraft(newText);
+    // 삭제 후 커서 위치 조정
+    nextCursor.current = newCursorPos;
+  }
+
   return (
     <main>
       <h1>AA 입력 도우미</h1>
 
       <Editor ref={editorRef} text={draft} onChange={setDraft} fontSize={fontSize} />
+      <CursorControl editorRef={editorRef} onLineDelete={handleLineDelete} />
 
       <SnippetBar snippets={SNIPPETS} onInsert={insert} />
       <DiceBar onInsert={insert} />
