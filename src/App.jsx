@@ -1,11 +1,12 @@
-import { useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import useMessage from "./hooks/useMessage";
 import Editor from "./components/Editor";
 import SnippetBar from "./components/SnippetBar";
 import FontSizeControl from "./components/FontSizeControl";
+import LinkSection from "./components/LinkSection";
 
-const SNIPPETS = ["\u3000"];
+const SNIPPETS = ["『", "』","\u3000"];
 const MIN_FONT = 4;
 const MAX_FONT = 24;
 
@@ -13,6 +14,7 @@ export default function App() {
   // ── state: 화면을 바꾸는 값들 (localStorage에 자동 저장) ──
   const [draft, setDraft] = useLocalStorage("draft", "");
   const [fontRaw, setFontRaw] = useLocalStorage("fs", "11");
+  const [recall, setRecall] = useLocalStorage("trash", "");
   const [message, say] = useMessage();
 
   // ── ref: 렌더링과 상관없이 기억해 둘 값들 ──
@@ -21,6 +23,7 @@ export default function App() {
 
   // ── 파생 값: state에서 계산할 수 있는 건 state로 또 저장하지 않는다 ──
   const fontSize = parseInt(fontRaw, 10) || 11;
+
 
   function changeFont(n) {
     const clamped = Math.max(MIN_FONT, Math.min(MAX_FONT, n));
@@ -48,7 +51,15 @@ export default function App() {
   }, [draft]);
 
   function handleClear() {
-    if (confirm("전체를 지울까요?")) setDraft("");
+    if (draft === "") return; 
+    if (confirm("전체를 지울까요?")) {
+      setRecall(draft);   // ← 지우기 전에 백업
+      setDraft("");
+    }
+  }
+
+  function handleRecall() {
+    setDraft(recall);
   }
 
   async function handleCopy() {
@@ -98,8 +109,11 @@ export default function App() {
           전체 복사
         </button>
         <button onClick={handleClear}>지우기</button>
+        <button onClick={handleRecall} disabled={recall === ""}>되돌리기</button>
       </div>
       <small className="message">{message}</small>
+
+      <LinkSection say={say} />
 
       <p>
         <small>폰트: Monapo (IPA Font License v1.0)</small>

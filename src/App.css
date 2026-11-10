@@ -41,9 +41,10 @@ body {
   font-family: system-ui, -apple-system, "Noto Sans KR", sans-serif;
 }
 main {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;          /* dvh = 실제 보이는 높이 */
+  box-sizing: border-box;
 }
 h1 {
   font-size: 18px;
@@ -52,9 +53,10 @@ h1 {
 
 /* AA 입력창: 고정폭 폰트 + 줄바꿈 없음이 핵심 */
 .editor {
+  flex: 1;
   width: 100%;
   box-sizing: border-box;
-  height: 46vh;
+  height: auto;
   font-family: "Monapo", "MS PGothic", "MS P Gothic", "IPAMonaPGothic", sans-serif;
   font-size: 11px;
   line-height: 1.125;
@@ -121,3 +123,27 @@ small {
   display: block;
   min-height: 1.4em;
 }
+
+.link-form { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.link-form input {
+  font: inherit;
+  font-size: 16px;   /* iPhone은 16px 미만이면 입력할 때 화면이 확대됨 */
+  min-height: 48px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--fg);
+}
+.link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;   /* column → row */
+  flex-wrap: wrap;       /* 줄이 차면 아래로 내려가기 */
+  gap: 8px;
+}
+.link-list li { display: flex; gap: 12px; }
+/* .link-list .link-button { flex: 1; } 는 삭제 (버튼이 가로로 늘어나지 않게) */
