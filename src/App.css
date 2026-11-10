@@ -1,0 +1,123 @@
+@font-face {
+  font-family: "Monapo";
+  src: url("./assets/fonts/Monapo.woff2") format("woff2");
+}
+
+:root {
+  --bg: #fff;
+  --fg: #1a1a1a;
+  --card: #f2f2f4;
+  --line: #d0d0d6;
+  --accent: #2f6fed;
+  --accent-fg: #fff;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16161a;
+    --fg: #ececf0;
+    --card: #24242b;
+    --line: #3a3a44;
+    --accent: #6b97ff;
+    --accent-fg: #101014;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16161a;
+  --fg: #ececf0;
+  --card: #24242b;
+  --line: #3a3a44;
+  --accent: #6b97ff;
+  --accent-fg: #101014;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Noto Sans KR", sans-serif;
+}
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px;
+}
+h1 {
+  font-size: 18px;
+  margin: 4px 0 10px;
+}
+
+/* AA 입력창: 고정폭 폰트 + 줄바꿈 없음이 핵심 */
+.editor {
+  width: 100%;
+  box-sizing: border-box;
+  height: 46vh;
+  font-family: "Monapo", "MS PGothic", "MS P Gothic", "IPAMonaPGothic", sans-serif;
+  font-size: 11px;
+  line-height: 1.125;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  white-space: pre;
+  overflow: auto;
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+button {
+  font: inherit;
+  font-size: 16px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--fg);
+}
+button.primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+details {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+}
+.snippet-config {
+  width: 100%;
+  box-sizing: border-box;
+  height: 110px;
+  font: 16px monospace;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+small {
+  color: var(--fg);
+  opacity: 0.7;
+}
+/* 메시지가 사라져도 줄 높이가 유지되도록 (원본의 &nbsp; 역할) */
+.message {
+  display: block;
+  min-height: 1.4em;
+}
