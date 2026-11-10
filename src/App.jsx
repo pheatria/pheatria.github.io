@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import useMessage from "./hooks/useMessage";
 import Editor from "./components/Editor";
@@ -6,7 +6,7 @@ import SnippetBar from "./components/SnippetBar";
 import FontSizeControl from "./components/FontSizeControl";
 import LinkSection from "./components/LinkSection";
 import DiceBar from "./components/DiceBar";
-import CursorControl from "../../aa-helper/src/components/CursorControl";
+import CursorControl from "./components/CursorControl";
 import VoiceInput from "./components/VoiceInput";
 
 const SNIPPETS = ["『", "』","\u3000"];
