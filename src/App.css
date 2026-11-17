@@ -31,7 +31,7 @@
   .editor {
     flex: 1;           /* PC에서는 다시 남은 공간을 채우도록 복구 */
     height: auto;
-    min-height: 150px;
+    min-height: 400px;
     resize: vertical;  /* PC에서는 사용자가 크기 조절 가능 */
   }
 }
@@ -65,24 +65,23 @@ h1 {
 
 /* AA 입력창: 고정폭 폰트 + 줄바꿈 없음이 핵심 */
 .editor {
-  flex: 1;
+  flex: none;          /* flex 아이템으로 자동 늘어남 방지 (핵심) */
   width: 100%;
+  height: 300px;       /* 원하는 모바일 고정 높이 (예: 300px 또는 45dvh) */
   box-sizing: border-box;
-  min-height: 60vh;
-  height: auto;
   font-family: "Monapo", "MS PGothic", "MS P Gothic", "IPAMonaPGothic", sans-serif;
   font-size: 11px;
   line-height: 1.125;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   white-space: pre;
-  overflow: auto;
+  overflow: auto;      /* 고정된 크기를 넘어가면 가로/세로 스크롤 생성 */
   background: var(--card);
   color: var(--fg);
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px;
-  resize: vertical;
+  resize: none;        /* 모바일에서는 사용자가 임의로 크기를 망가뜨리지 못하게 고정 */
 }
 
 .row {
