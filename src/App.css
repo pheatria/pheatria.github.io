@@ -29,7 +29,10 @@
     display: none !important;
   }
   .editor {
-    min-height: 400px;
+    flex: 1;           /* PC에서는 다시 남은 공간을 채우도록 복구 */
+    height: auto;
+    min-height: 250px;
+    resize: vertical;  /* PC에서는 사용자가 크기 조절 가능 */
   }
 }
 :root[data-theme="dark"] {
