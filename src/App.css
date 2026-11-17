@@ -31,7 +31,7 @@
   .editor {
     flex: 1;           /* PC에서는 다시 남은 공간을 채우도록 복구 */
     height: auto;
-    min-height: 250px;
+    min-height: 150px;
     resize: vertical;  /* PC에서는 사용자가 크기 조절 가능 */
   }
 }
