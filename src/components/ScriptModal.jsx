@@ -1,7 +1,6 @@
 import { useState } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 
-// 대본 텍스트를 줄별로 정리 (화자명 및 앞쪽 공백 제거, 화자 뱃지는 표시용으로 분리)
 function parseScriptLines(raw) {
   if (!raw.trim()) return [];
   const lines = raw.split("\n");
@@ -9,11 +8,9 @@ function parseScriptLines(raw) {
   let currentSpeaker = "";
 
   lines.forEach((line, idx) => {
-    // 완전히 빈 줄은 제외
     if (!line.trim()) return;
 
-    // 1. 【 잠시 후 】 같은 지문 줄
-    if (/^[ \s]*【.+】/.test(line)) {
+    if (/^[\u3000\s]*【.+】/.test(line)) {
       currentSpeaker = "지문";
       result.push({
         id: `${idx}-${line}`,
@@ -24,8 +21,7 @@ function parseScriptLines(raw) {
       return;
     }
 
-    // 2. "화자 + 공백 2칸 이상 + 대사" 형태
-    const match = line.match(/^([^\s ]+)[ \s]{2,}(.*)$/);
+    const match = line.match(/^([^\s\u3000]+)[\u3000\s]{2,}(.*)$/);
     if (match) {
       currentSpeaker = match[1];
       result.push({
@@ -35,11 +31,10 @@ function parseScriptLines(raw) {
         isNewBlock: true,
       });
     } else {
-      // 3. 둘째 줄 이상 이어지는 대사 (앞쪽 전각/반각 공백만 제거)
       result.push({
         id: `${idx}-${line}`,
         speaker: currentSpeaker,
-        text: line.replace(/^[ \s]+/, ""),
+        text: line.replace(/^[\u3000\s]+/, ""),
         isNewBlock: false,
       });
     }
@@ -50,12 +45,16 @@ function parseScriptLines(raw) {
 
 export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
   const [rawScript, setRawScript] = useLocalStorage("script_raw", "");
-  const [usedIds, setUsedIds] = useState([]); // ← useLocalStorage 대신 useState로 변경!
+  const [usedIds, setUsedIds] = useState([]);
+  const [deletedIds, setDeletedIds] = useState([]); // X 눌러서 숨긴 줄 ID 목록
   const [isEditMode, setIsEditMode] = useState(!rawScript);
 
   if (!isOpen) return null;
 
-  const parsedLines = parseScriptLines(rawScript);
+  // 삭제(X)된 줄은 필터링해서 목록에서 제외
+  const parsedLines = parseScriptLines(rawScript).filter(
+    (item) => !deletedIds.includes(item.id)
+  );
 
   async function handlePasteScript() {
     try {
@@ -63,6 +62,7 @@ export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
       if (text) {
         setRawScript(text);
         setUsedIds([]);
+        setDeletedIds([]);
         setIsEditMode(false);
         say("대본을 불러왔어요");
       } else {
@@ -74,16 +74,17 @@ export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
   }
 
   function handleLineClick(item) {
-    // 1. 에디터 커서 위치에 해당 줄 텍스트 삽입
     onSelectLine(item.text);
-
-    // 2. 사용한 줄로 표시 (중복 추가 방지)
     if (!usedIds.includes(item.id)) {
       setUsedIds([...usedIds, item.id]);
     }
-
-    // 3. 팝업 닫고 에디터로 복귀
     onClose();
+  }
+
+  // X 버튼 클릭 시 목록에서 제거
+  function handleDeleteLine(e, id) {
+    e.stopPropagation(); // 부모 클릭(에디터 삽입) 방지
+    setDeletedIds([...deletedIds, id]);
   }
 
   return (
@@ -92,6 +93,9 @@ export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
         <div className="modal-header">
           <strong>대본 줄별 삽입</strong>
           <div style={{ display: "flex", gap: "6px" }}>
+            {deletedIds.length > 0 && !isEditMode && (
+              <button onClick={() => setDeletedIds([])}>복구</button>
+            )}
             <button onClick={() => setIsEditMode(!isEditMode)}>
               {isEditMode ? "목록 보기" : "대본 수정"}
             </button>
@@ -109,6 +113,7 @@ export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
                 onClick={() => {
                   setRawScript("");
                   setUsedIds([]);
+                  setDeletedIds([]);
                 }}
               >
                 비우기
@@ -120,6 +125,7 @@ export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
               onChange={(e) => {
                 setRawScript(e.target.value);
                 setUsedIds([]);
+                setDeletedIds([]);
               }}
               placeholder="여기에 대본 전체를 붙여넣으세요..."
             />
@@ -135,24 +141,33 @@ export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
           <div className="modal-body script-list">
             {parsedLines.length === 0 ? (
               <p style={{ opacity: 0.7, textAlign: "center" }}>
-                불러온 대본이 없습니다. [대본 수정]을 눌러 붙여넣으세요.
+                남은 대본이 없습니다. [대본 수정]이나 [복구]를 눌러주세요.
               </p>
             ) : (
               parsedLines.map((item) => {
                 const isUsed = usedIds.includes(item.id);
                 return (
-                  <button
+                  <div
                     key={item.id}
-                    className={`script-line-btn ${isUsed ? "used" : ""} ${
-                      item.isNewBlock ? "new-block" : ""
-                    }`}
-                    onClick={() => handleLineClick(item)}
+                    className={`script-line-row ${item.isNewBlock ? "new-block" : ""}`}
                   >
-                    {item.isNewBlock && item.speaker && (
-                      <span className="speaker-badge">{item.speaker}</span>
-                    )}
-                    <span className="line-text">{item.text}</span>
-                  </button>
+                    <button
+                      className={`script-line-btn ${isUsed ? "used" : ""}`}
+                      onClick={() => handleLineClick(item)}
+                    >
+                      {item.isNewBlock && item.speaker && (
+                        <span className="speaker-badge">{item.speaker}</span>
+                      )}
+                      <span className="line-text">{item.text}</span>
+                    </button>
+                    <button
+                      className="script-del-btn"
+                      onClick={(e) => handleDeleteLine(e, item.id)}
+                      aria-label="줄 삭제"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 );
               })
             )}
