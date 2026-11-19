@@ -10,7 +10,7 @@ import CursorControl from "./components/CursorControl";
 import VoiceInput from "./components/VoiceInput";
 import ScriptModal from "./components/ScriptModal";
 
-const SNIPPETS = ["『", "』","\u3000"];
+const SNIPPETS = ["『", "』","\u3000", [hr]];
 const MIN_FONT = 4;
 const MAX_FONT = 24;
 
