@@ -176,3 +176,99 @@ small {
 }
 .link-list li { display: flex; gap: 12px; }
 /* .link-list .link-button { flex: 1; } 는 삭제 (버튼이 가로로 늘어나지 않게) */
+
+
+/* 대본 팝업 모달 */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end; /* 모바일에서 엄지로 닿기 쉽게 하단 시트 형태로 배치 */
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 600px;
+  height: 75dvh;
+  background: var(--bg);
+  color: var(--fg);
+  border-top: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.script-input {
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  font: 14px/1.5 sans-serif;
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  resize: none;
+}
+
+.script-list {
+  gap: 6px;
+  padding-bottom: 24px;
+}
+
+.script-line-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  line-height: 1.4;
+}
+
+/* 새로운 화자 턴이 시작될 때 위쪽 간격을 살짝 띄워 구분감 제공 */
+.script-line-btn.new-block {
+  margin-top: 6px;
+}
+
+/* 이미 한 번 삽입한 줄은 흐리게 처리해서 진행도 파악 */
+.script-line-btn.used {
+  opacity: 0.45;
+}
+
+.speaker-badge {
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+
+.line-text {
+  font-size: 13px;
+  word-break: keep-all;
+}
