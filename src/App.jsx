@@ -159,6 +159,14 @@ export default function App() {
       <p>
         <small>폰트: Monapo (IPA Font License v1.0)</small>
       </p>
+
+      {/* 이 부분이 빠져 있었습니다! */}
+      <ScriptModal
+        isOpen={isScriptOpen}
+        onClose={() => setIsScriptOpen(false)}
+        onSelectLine={handleInsertScriptLine}
+        say={say}
+      />
     </main>
   );
 }
