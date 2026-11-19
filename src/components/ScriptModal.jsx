@@ -50,7 +50,7 @@ function parseScriptLines(raw) {
 
 export default function ScriptModal({ isOpen, onClose, onSelectLine, say }) {
   const [rawScript, setRawScript] = useLocalStorage("script_raw", "");
-  const [usedIds, setUsedIds] = useLocalStorage("script_used", []);
+  const [usedIds, setUsedIds] = useState([]); // ← useLocalStorage 대신 useState로 변경!
   const [isEditMode, setIsEditMode] = useState(!rawScript);
 
   if (!isOpen) return null;
