@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import useMessage from "./hooks/useMessage";
 import Editor from "./components/Editor";
@@ -8,6 +8,7 @@ import LinkSection from "./components/LinkSection";
 import DiceBar from "./components/DiceBar";
 import CursorControl from "./components/CursorControl";
 import VoiceInput from "./components/VoiceInput";
+import ScriptModal from "./components/ScriptModal";
 
 const SNIPPETS = ["『", "』","\u3000"];
 const MIN_FONT = 4;
@@ -19,13 +20,27 @@ export default function App() {
   const [fontRaw, setFontRaw] = useLocalStorage("fs", "11");
   const [recall, setRecall] = useLocalStorage("trash", "");
   const [message, say] = useMessage();
+  const [isScriptOpen, setIsScriptOpen] = useState(false);
 
   // ── ref: 렌더링과 상관없이 기억해 둘 값들 ──
   const editorRef = useRef(null); // textarea DOM
   const nextCursor = useRef(null); // "다음 렌더 후 커서를 여기로 옮겨라"
+  const savedSelection = useRef({ start: 0, end: 0 }); // 팝업 열기 전 커서 기억용
 
   // ── 파생 값: state에서 계산할 수 있는 건 state로 또 저장하지 않는다 ──
   const fontSize = parseInt(fontRaw, 10) || 11;
+
+  // 팝업 열 때 현재 커서 위치 저장
+  function openScriptModal() {
+    const el = editorRef.current;
+    if (el) {
+      savedSelection.current = {
+        start: el.selectionStart,
+        end: el.selectionEnd,
+      };
+    }
+    setIsScriptOpen(true);
+  }
 
 
   function changeFont(n) {
@@ -103,6 +118,14 @@ export default function App() {
     }
   }
 
+  // 팝업에서 대사 줄을 클릭했을 때 저장해 둔 커서 위치에 삽입
+  function handleInsertScriptLine(lineText) {
+    const { start, end } = savedSelection.current;
+    setDraft((prev) => prev.slice(0, start) + lineText + prev.slice(end));
+    nextCursor.current = start + lineText.length;
+    editorRef.current?.focus();
+  }
+
   return (
     <main>
       <h1>AA 입력 도우미</h1>
@@ -113,6 +136,10 @@ export default function App() {
       <div className="row">
         <SnippetBar snippets={SNIPPETS} onInsert={insert} />
         <VoiceInput onInsert={insert} say={say} />
+        {/* 대본 팝업 열기 버튼 추가 */}
+        <button className="primary" onClick={openScriptModal}>
+          대본
+        </button>
       </div>
       <DiceBar onInsert={insert} />
       <FontSizeControl fontSize={fontSize} onChange={changeFont} />
