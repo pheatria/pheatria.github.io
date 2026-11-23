@@ -41,6 +41,7 @@ export default function LinkSection({ say }) {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   const searchRef = useRef(null);
+  const importFileRef = useRef(null);
 
   async function loadAAs() {
     try {
@@ -123,6 +124,120 @@ export default function LinkSection({ say }) {
     } catch (error) {
       console.error("AA 삭제 실패:", error);
       say?.("AA 삭제에 실패했습니다.");
+    }
+  }
+
+  //JSON 백업
+  async function handleExport() {
+    try {
+      const data = await getAllAAs();
+  
+      const backup = {
+        format: "aa-library",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        aas: data,
+      };
+  
+      const blob = new Blob(
+        [JSON.stringify(backup, null, 2)],
+        { type: "application/json" }
+      );
+  
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+  
+      link.href = url;
+      link.download = `aa-library-${new Date()
+        .toISOString()
+        .slice(0, 10)}.json`;
+  
+      link.click();
+  
+      URL.revokeObjectURL(url);
+  
+      say?.(`${data.length}개의 AA를 백업했습니다.`);
+    } catch (error) {
+      console.error("AA 백업 실패:", error);
+      say?.("AA 백업에 실패했습니다.");
+    }
+  }
+
+  // JSON 복원
+  async function handleImport(e) {
+    const file = e.target.files?.[0];
+  
+    if (!file) return;
+  
+    try {
+      const text = await file.text();
+      const backup = JSON.parse(text);
+  
+      if (
+        backup.format !== "aa-library" ||
+        backup.version !== 1 ||
+        !Array.isArray(backup.aas)
+      ) {
+        throw new Error("올바른 AA 백업 파일이 아닙니다.");
+      }
+  
+      const validAAs = backup.aas.filter(
+        (aa) =>
+          aa &&
+          typeof aa.id === "string" &&
+          typeof aa.name === "string" &&
+          typeof aa.content === "string" &&
+          typeof aa.createdAt === "number" &&
+          aa.name.trim().length > 0
+      );
+  
+      if (validAAs.length !== backup.aas.length) {
+        throw new Error("백업 파일에 잘못된 데이터가 포함되어 있습니다.");
+      }
+  
+      if (validAAs.length === 0) {
+        say?.("복원할 AA가 없습니다.");
+        return;
+      }
+  
+      const confirmed = confirm(
+        `${validAAs.length}개의 AA를 복원할까요?\n\n기존 데이터는 삭제되지 않습니다.`
+      );
+  
+      if (!confirmed) return;
+  
+      const db = await dbPromise;
+      const tx = db.transaction(STORE_NAME, "readwrite");
+  
+      const existingIds = new Set(
+        await tx.store.getAllKeys()
+      );
+  
+      let imported = 0;
+      let skipped = 0;
+  
+      for (const aa of validAAs) {
+        if (existingIds.has(aa.id)) {
+          skipped++;
+          continue;
+        }
+  
+        await tx.store.add(aa);
+        imported++;
+      }
+  
+      await tx.done;
+  
+      await loadAAs();
+  
+      say?.(
+        `복원 완료: ${imported}개 추가, ${skipped}개 중복 제외`
+      );
+    } catch (error) {
+      console.error("AA 복원 실패:", error);
+      say?.("AA 복원에 실패했습니다.");
+    } finally {
+      e.target.value = "";
     }
   }
 
@@ -298,6 +413,26 @@ export default function LinkSection({ say }) {
                   </div>
                 ))
               )}
+              <div className="aa-backup-actions">
+                <button type="button" onClick={handleExport}>
+                  ↓ JSON 백업
+                </button>
+              
+                <button
+                  type="button"
+                  onClick={() => importFileRef.current?.click()}
+                >
+                  ↑ JSON 복원
+                </button>
+              
+                <input
+                  ref={importFileRef}
+                  type="file"
+                  accept=".json,application/json"
+                  hidden
+                  onChange={handleImport}
+                />
+              </div>
             </div>
           </div>
         </div>
