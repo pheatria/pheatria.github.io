@@ -30,11 +30,17 @@ async function deleteAA(id) {
   return db.delete(STORE_NAME, id);
 }
 
+async function updateAA(aa) {
+  const db = await dbPromise;
+  return db.put(STORE_NAME, aa);
+}
+
 export default function LinkSection({ say }) {
   const [aas, setAas] = useState([]);
   const [label, setLabel] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
+  const [editingAA, setEditingAA] = useState(null);
 
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -70,32 +76,44 @@ export default function LinkSection({ say }) {
   // AA 등록
   async function handleAdd(e) {
     e.preventDefault();
-
+  
     const name = label.trim();
     const text = content;
-
+  
     if (!name || !text.trim()) {
       say?.("이름과 AA 원문을 입력하세요.");
       return;
     }
-
-    const newAA = {
-      id: crypto.randomUUID(),
-      name,
-      content: text,
-      createdAt: Date.now(),
-    };
-
+  
     try {
-      await addAA(newAA);
-      
+      if (editingAA) {
+        // 기존 AA 수정
+        await updateAA({
+          ...editingAA,
+          name,
+          content: text,
+          updatedAt: Date.now(),
+        });
+  
+        say?.("AA를 수정했습니다.");
+      } else {
+        // 신규 AA 등록
+        await addAA({
+          id: crypto.randomUUID(),
+          name,
+          content: text,
+          createdAt: Date.now(),
+        });
+  
+        say?.("AA를 저장했습니다.");
+      }
+  
       setLabel("");
       setContent("");
+      setEditingAA(null);
       setIsRegisterOpen(false);
-      
+  
       await loadAAs();
-      
-      say?.("AA를 저장했습니다.");
     } catch (error) {
       console.error("AA 저장 실패:", error);
       say?.("AA 저장에 실패했습니다.");
@@ -111,6 +129,14 @@ export default function LinkSection({ say }) {
       console.error("AA 복사 실패:", error);
       say?.("클립보드 복사에 실패했습니다.");
     }
+  }
+
+  // AA 수정 팝업 열기
+  function handleUpdate(aa) {
+    setEditingAA(aa);
+    setLabel(aa.name);
+    setContent(aa.content);
+    setIsRegisterOpen(true);
   }
 
   // AA 삭제
@@ -291,7 +317,12 @@ export default function LinkSection({ say }) {
       
         <button
           type="button"
-          onClick={() => setIsRegisterOpen(true)}
+          onClick={() => {
+            setEditingAA(null);
+            setLabel("");
+            setContent("");
+            setIsRegisterOpen(true);
+          }}
         >
           ＋ AA 등록
         </button>
@@ -310,7 +341,7 @@ export default function LinkSection({ say }) {
             aria-label="AA 등록"
           >
             <div className="aa-popup-header">
-              <strong>AA 등록</strong>
+              <strong>{editingAA ? "AA 수정" : "AA 등록"}</strong>
               <button
                 type="button"
                 onClick={closeRegisterPopup}
@@ -336,7 +367,7 @@ export default function LinkSection({ say }) {
               />
       
               <button type="submit" className="primary">
-                ＋ AA 저장
+                {editingAA ? "수정 완료" : "＋ AA 저장"}
               </button>
             </form>
           </div>
@@ -404,6 +435,13 @@ export default function LinkSection({ say }) {
 
                     <button
                       type="button"
+                      onClick={() => handleUpdate(aa)}
+                    >
+                      수정
+                    </button>
+
+                    <button
+                      type="button"
                       className="aa-popup-delete"
                       onClick={() => handleRemove(aa)}
                       aria-label={`${aa.name} 삭제`}
@@ -413,7 +451,8 @@ export default function LinkSection({ say }) {
                   </div>
                 ))
               )}
-              <div className="aa-backup-actions">
+            </div>
+            <div className="aa-backup-actions">
                 <button type="button" onClick={handleExport}>
                   ↓ JSON 백업
                 </button>
@@ -433,7 +472,6 @@ export default function LinkSection({ say }) {
                   onChange={handleImport}
                 />
               </div>
-            </div>
           </div>
         </div>
       )}
