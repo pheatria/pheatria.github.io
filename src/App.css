@@ -304,3 +304,79 @@ small {
   font-size: 13px;
   word-break: keep-all;
 }
+
+
+.aa-library {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aa-library .link-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aa-library textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: monospace;
+  white-space: pre;
+}
+
+.aa-library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.aa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.aa-item {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 8px;
+}
+
+.aa-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.aa-item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.aa-preview {
+  max-height: 180px;
+  overflow: auto;
+  margin: 0;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.15;
+  white-space: pre;
+}
+
+.aa-empty {
+  text-align: center;
+  opacity: 0.6;
+  padding: 20px;
+}
+
