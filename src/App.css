@@ -450,3 +450,21 @@ small {
   box-sizing: border-box;
   resize: vertical;
 }
+
+.aa-backup-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-color, #ddd);
+}
+
+.aa-backup-actions button {
+  flex: 1;
+  padding: 10px 6px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+}
