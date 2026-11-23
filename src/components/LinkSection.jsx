@@ -38,6 +38,7 @@ export default function LinkSection({ say }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   const searchRef = useRef(null);
 
@@ -86,9 +87,13 @@ export default function LinkSection({ say }) {
 
     try {
       await addAA(newAA);
+      
       setLabel("");
       setContent("");
+      setIsRegisterOpen(false);
+      
       await loadAAs();
+      
       say?.("AA를 저장했습니다.");
     } catch (error) {
       console.error("AA 저장 실패:", error);
@@ -132,10 +137,15 @@ export default function LinkSection({ say }) {
     setSearch("");
   }
 
+    // 팝업 닫기
+  function closeRegisterPopup() {
+    setIsRegisterOpen(false);
+  }
+
   return (
     <section className="aa-library">
       {/* AA 등록 */}
-      <form className="link-form" onSubmit={handleAdd}>
+      {/* <form className="link-form" onSubmit={handleAdd}>
         <input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
@@ -153,19 +163,70 @@ export default function LinkSection({ say }) {
         <button type="submit" className="primary">
           ＋ AA 저장
         </button>
-      </form>
+      </form> */}
 
       {/* 보관함 열기 */}
-      <button
-        type="button"
-        className="aa-library-open"
-        onClick={() => setIsOpen(true)}
-      >
-        <span>AA 검색 및 복사</span>
-        <span className="aa-library-count">
-          {aas.length}개
-        </span>
-      </button>
+      <div className="aa-library-actions">
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+        >
+          AA 검색 및 복사 ({aas.length})
+        </button>
+      
+        <button
+          type="button"
+          onClick={() => setIsRegisterOpen(true)}
+        >
+          ＋ AA 등록
+        </button>
+      </div>
+
+      {isRegisterOpen && (
+        <div
+          className="aa-popup-overlay"
+          onClick={closeRegisterPopup}
+        >
+          <div
+            className="aa-popup"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="AA 등록"
+          >
+            <div className="aa-popup-header">
+              <strong>AA 등록</strong>
+              <button
+                type="button"
+                onClick={closeRegisterPopup}
+                aria-label="닫기"
+              >
+                ✕
+              </button>
+            </div>
+      
+            <form className="link-form" onSubmit={handleAdd}>
+              <input
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                placeholder="AA 이름 (예: 시로 - 기본 표정)"
+              />
+      
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="AA 원문을 붙여넣으세요."
+                rows={10}
+                spellCheck={false}
+              />
+      
+              <button type="submit" className="primary">
+                ＋ AA 저장
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* 검색 팝업 */}
       {isOpen && (
