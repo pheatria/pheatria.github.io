@@ -438,3 +438,15 @@ small {
     padding: 13px;
   }
 }
+
+.aa-popup .link-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.aa-popup .link-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+}
